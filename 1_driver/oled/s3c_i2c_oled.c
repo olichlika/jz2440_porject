@@ -12,6 +12,8 @@
 #include <asm/uaccess.h>
 // #include "oledfont.h"
 
+#define OLED_CLEAR 0
+
 static struct i2c_driver oled_driver;
 static struct i2c_client *new_client;
 
@@ -26,6 +28,17 @@ static struct i2c_client_address_data addr_data = {
 	.ignore     = ignore,
 	//.forces   = forces,  /* 强制认为存在这个设备 */
 };
+static int oled_ioctl(struct inode *inode, struct file *file, unsigned int cmd, unsigned long arg) {
+	switch(cmd) {
+		case OLED_CLEAR:
+			OLED_Clear();
+			return 0;
+
+		default:
+           	return -EINVAL;
+	}
+}
+
 static ssize_t oled_write(struct file *file, const char __user *buf, size_t size, loff_t *offset){
 	unsigned char val[64];
 
@@ -54,6 +67,7 @@ static struct file_operations oled_fops = {
 	//.read  = oled_read,
 	.write = oled_write,
 	.open  = oled_open,
+	.ioctl = oled_ioctl
 };
 static struct class *cls;
 
