@@ -25,11 +25,11 @@
 
 struct fb_fix_screeninfo finfo = {0};       // 不可变信息结构体
 struct fb_var_screeninfo vinfo = {0};       // 可变信息结构体
-static volatile unsigned short *pMap = NULL;  // 用来指向mmap映射得到的虚拟地址
+static volatile unsigned int *pMap = NULL;  // 用来指向mmap映射得到的虚拟地址
 
 
-static inline void lcd_draw_pixel(unsigned int x, unsigned int y, unsigned short color);
-static void lcd_draw_background(unsigned short color);
+static inline void lcd_draw_pixel(unsigned int x, unsigned int y, unsigned int color);
+static void lcd_draw_background(unsigned int color);
 
 int main(void)
 {
@@ -75,30 +75,31 @@ int main(void)
     
     /* 背景填充 */
     //lcd_draw_background(RED);//#define  RED      0xF800       //红色 RGB565
-	lcd_draw_pixel(0, 0, WHITE);
-	lcd_draw_pixel(0, 1, WHITE);
-    lcd_draw_pixel(100, 5, WHITE);
-	lcd_draw_pixel(470, 5, WHITE);
-    lcd_draw_pixel(100, 10, RED);
-    lcd_draw_pixel(100, 15, GREEN);
-	lcd_draw_pixel(100, 20, GREEN);
-	lcd_draw_pixel(100, 100, GREEN);
-	//lcd_draw_pixel(255, 136, RED);
+
+	// lcd_draw_pixel(0, 0, WHITE);
+	// lcd_draw_pixel(0, 1, WHITE);
+    // lcd_draw_pixel(100, 5, WHITE);
+	// lcd_draw_pixel(470, 5, WHITE);
+    // lcd_draw_pixel(100, 10, RED);
+    // lcd_draw_pixel(100, 15, GREEN);
+	// lcd_draw_pixel(100, 20, GREEN);
+	// lcd_draw_pixel(100, 100, GREEN);
+
+	//lcd_draw_pixel(1, 1, YELLOW);
 	
-	//lcd_draw_background(RED);
+	lcd_draw_background(Qioke);
     /* 关闭文件 */
     close(fd);
     return 0;
 }
 
 /*填充像素点*/
-static inline void lcd_draw_pixel(unsigned int x, unsigned int y, unsigned short color)
-{
-    *(unsigned short *)((unsigned int)pMap + (vinfo.xres*y + x)*2) = color;
+static inline void lcd_draw_pixel(unsigned int x, unsigned int y, unsigned int color) {
+    *(unsigned int *)((unsigned int)pMap + (vinfo.xres*y + x)*4) = color;
 }
 
 /*填充LCD背景*/
-static void lcd_draw_background(unsigned short color)
+static void lcd_draw_background(unsigned int color)
 {
      unsigned int i = 0;
      unsigned int j = 0;
